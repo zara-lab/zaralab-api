@@ -18,7 +18,7 @@ use Slim\Http\Environment;
 use Slim\Router;
 use Zaralab\Framework\Di\ContainerAware;
 
-class ApplicationController extends ContainerAware
+abstract class ApplicationController extends ContainerAware
 {
     const URL_SCHEMA_NONE = 'none';
     const URL_SCHEMA_AUTO = 'auto';
