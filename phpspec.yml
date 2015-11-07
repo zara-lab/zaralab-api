@@ -1,0 +1,19 @@
+suites:
+    zaralab_suite:
+        namespace: Zaralab
+        spec_path: tests
+        spec_prefix: spec
+
+extensions:
+    - PhpSpec\Extension\CodeCoverageExtension
+
+code_coverage:
+    whitelist:
+        - src/Zaralab/Entity
+        - src/Zaralab/Service
+    format:
+        - html
+        - clover
+    output:
+        html: coverage
+        clover: coverage/coverage.xml

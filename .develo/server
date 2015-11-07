@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+ZARALAB_PHPPID=""
+
+# magic function called by develo run helper
+function _run_server_stop {
+  __zaralab_detect_php
+  if [ ! -z "$ZARALAB_PHPPID" ]; then
+    kill $ZARALAB_PHPPID
+    echo "ZaraLab PHP server stopped"
+  else
+    _run_server_status
+  fi
+}
+
+# magic function called by develo run helper
+function _run_server_status {
+  __zaralab_detect_php
+  if [ -z "$ZARALAB_PHPPID" ]; then
+    echo "PHP server is not running"
+  else
+    echo "PHP server is running on  http://127.0.0.1:8000/"
+  fi
+}
+
+# magic function called by develo run helper
+function _run_server {
+  if [ ! -z "$1" ] && [ "$1" != "start" ]; then
+    echo "Unknown sub-command $1"
+    __zaralab_server_help
+    return 0
+  fi
+  __zaralab_detect_php
+  if [ -z "$ZARALAB_PHPPID" ]; then
+    nohup php -S 0.0.0.0:8000 -t public public/index.php > /dev/null 2>&1 &
+    echo "PHP server started on http://127.0.0.1:8000/"
+  else
+    _run_server_status
+  fi
+}
+
+# local helper
+function __zaralab_detect_php {
+  ZARALAB_PHPPID=$(ps -ef | grep "php -S 0.0.0.0:8000 -t public public/index.php" | grep -v grep | awk '{print $2}')
+}
+
+function __zaralab_server_help {
+  echo
+  echo "Usage: "
+  echo "develo server [SUB-COMMAND]"
+  echo
+  echo "Sub-commands list: "
+  echo "  start     Default, start local PHP server"
+  echo "  stop    Start local PHP server"
+  echo "  status    Check PHP local server status"
+  echo
+}
+
+# run
+__develo_run_helper $@

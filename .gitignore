@@ -1,0 +1,7 @@
+vendor/
+log/
+cache/
+bin/
+coverage/
+.idea/
+app/parameters.php

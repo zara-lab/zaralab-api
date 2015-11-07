@@ -1,0 +1,17 @@
+<?php
+/**
+ * Project: zaralab
+ * Filename: parameters.php
+ *
+ * @author Miroslav Yovchev <m.yovchev@corllete.com>
+ * @since 02.11.15
+ */
+
+return [
+    'app.name'     => 'zaralab',
+    'db.driver'    => 'pdo_mysql',
+    'db.host'      => 'localhost',
+    'db.name'      => 'zaralab',
+    'db.user'      => '',
+    'db.password'  => '',
+];

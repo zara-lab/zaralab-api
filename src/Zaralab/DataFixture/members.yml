@@ -1,0 +1,7 @@
+Zaralab\Entity\Member:
+    user{1..20}:
+        firstName: <firstName()>
+        lastName: <lastName()>
+        email: <email()>
+        phone: <phoneNumber()>
+        enabled: <boolean()>
