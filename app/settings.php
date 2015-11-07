@@ -14,7 +14,7 @@ return [
 
         // Monolog settings
         'logger' => [
-            'name'              => 'ZaraLab',
+            'name'              => $params['app.name'] ?: 'app',
             'path'              => __DIR__.'/../log/app_'.$env.'.log',
         ],
 
