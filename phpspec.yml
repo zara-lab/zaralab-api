@@ -4,8 +4,8 @@ suites:
         spec_path: tests
         spec_prefix: spec
 
-extensions:
-    - PhpSpec\Extension\CodeCoverageExtension
+#extensions:
+#    - PhpSpec\Extension\CodeCoverageExtension
 
 code_coverage:
     whitelist:
