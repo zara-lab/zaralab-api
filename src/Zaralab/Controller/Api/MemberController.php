@@ -14,7 +14,7 @@ use JMS\Serializer\Serializer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zaralab\Entity\Member;
-use Zaralab\Exception\NotFoundException;
+use Zaralab\Exception\ResourceNotFoundException;
 use Zaralab\Framework\Controller\ApplicationController;
 use Zaralab\Service\MemberManager;
 
@@ -40,9 +40,13 @@ class MemberController extends ApplicationController
         $context = SerializationContext::create()->setGroups(array('Default'));
 
         $members = $manager->getAllByActive();
+        $total = count($members);
+        $result = [
+            'items' => $members,
+            'total_items' => $total
+        ];
 
-        return $this->jsonResponse($response)
-            ->write($serializer->serialize($members, 'json', $context));
+        return $response->write($serializer->serialize($result, 'json', $context));
     }
 
     /**
@@ -54,7 +58,7 @@ class MemberController extends ApplicationController
      *
      * @return \Psr\Http\Message\MessageInterface
      *
-     * @throws NotFoundException
+     * @throws ResourceNotFoundException
      */
     public function showAction(ServerRequestInterface $request, ResponseInterface $response, $id)
     {
@@ -67,12 +71,11 @@ class MemberController extends ApplicationController
 
         if (!$member) {
             $this->getMonolog()->warning('Member not found', ['id' => $id]);
-            throw new NotFoundException('Member not found');
+            throw new ResourceNotFoundException('Member not found');
         }
         $context = SerializationContext::create()->setGroups(array('Default'));
 
-        return $this->jsonResponse($response)
-            ->write($serializer->serialize($member, 'json', $context));
+        return $response->write($serializer->serialize($member, 'json', $context));
     }
 
     /**
@@ -97,7 +100,7 @@ class MemberController extends ApplicationController
      *
      * @return \Psr\Http\Message\MessageInterface
      *
-     * @throws NotFoundException
+     * @throws ResourceNotFoundException
      */
     public function updateAction(ServerRequestInterface $request, ResponseInterface $response, $id)
     {
@@ -113,7 +116,7 @@ class MemberController extends ApplicationController
      *
      * @return \Psr\Http\Message\MessageInterface
      *
-     * @throws NotFoundException
+     * @throws ResourceNotFoundException
      */
     public function patchAction(ServerRequestInterface $request, ResponseInterface $response, $id)
     {
@@ -129,7 +132,7 @@ class MemberController extends ApplicationController
      *
      * @return \Psr\Http\Message\MessageInterface
      *
-     * @throws NotFoundException
+     * @throws ResourceNotFoundException
      */
     public function deleteAction(ServerRequestInterface $request, ResponseInterface $response, $id)
     {

@@ -23,5 +23,9 @@ $app->group('/api', function() {
 
         // Delete
         $this->delete('/{id:[\d]+}', 'ApiMemberController:deleteAction')->setName('api_member_update_delete');
+    })->add(function ($request, $response, $next) {
+        $jsonResponse = $next($request, $response);
+        // Force JSON content type
+        return $jsonResponse->withHeader('Content-type', 'application/json');
     });
 });

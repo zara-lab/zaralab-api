@@ -1,7 +1,25 @@
 Zaralab\Entity\Member:
-    user{1..20}:
+    user1:
+        firstName: John
+        lastName: Doe
+        email: john.doe@example.com
+        phone: 123456789
+        enabled: true
+    user2:
+        firstName: Chuck
+        lastName: Norris
+        email: chuck.norris@example.com
+        phone: 666
+        enabled: false
+    user{3..11}:
         firstName: <firstName()>
         lastName: <lastName()>
         email: <email()>
         phone: <phoneNumber()>
-        enabled: <boolean()>
+        enabled: true
+    user{12..20}:
+        firstName: <firstName()>
+        lastName: <lastName()>
+        email: <email()>
+        phone: <phoneNumber()>
+        enabled: false

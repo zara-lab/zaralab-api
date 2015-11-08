@@ -1,0 +1,19 @@
+default:
+    autoload:
+        '': %paths.base%/tests/bootstrap
+    extensions:
+        Behat\WebApiExtension:
+            base_url: http://localhost:8001
+        Behat\RestTestingExtension: ~
+    suites:
+        web:
+            paths: [ %paths.base%/tests/features/web ]
+            contexts:
+                - WebContext
+        api:
+            paths: [ %paths.base%/tests/features/api ]
+            contexts:
+                - Behat\WebApiExtension\Context\WebApiContext
+                - Behat\RestTestingExtension\Context\RestTestingContext
+                - Behat\RestTestingContext\RestContext
+                - ApiContext

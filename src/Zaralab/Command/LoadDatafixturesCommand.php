@@ -36,6 +36,7 @@ class LoadDataFixturesCommand extends DoctrineCommand
             ->setDescription('Load data fixtures to your database.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('truncate-only', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement WITHOUT loading data fixtures')
             ->setHelp(<<<EOT
 The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
 
@@ -75,6 +76,12 @@ EOT
             );
         }
         $purger = new ORMPurger($em);
+        if ($input->getOption('truncate-only')) {
+            $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
+            $purger->purge();
+            exit(0);
+        }
+
         $purger->setPurgeMode($input->getOption('truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
         $executor->setLogger(function ($message) use ($output) {

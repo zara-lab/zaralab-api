@@ -10,6 +10,71 @@ $container['foundHandler'] = function() {
     return new \Slim\Handlers\Strategies\RequestResponseArgs();
 };
 
+// Custom error handlnig - TODO move to class
+$container['errorHandler'] = function ($c) {
+
+    return function ($request, $response, $exception) use ($c) {
+        /** @var \Slim\Http\Response $response */
+        $response = $c['response'];
+        $request = $c['request'];
+
+        $response = $response->withStatus(500);
+        $errTitle = 'Error';
+        $errMessage = 'Internal Server Error';
+        $code = $exception->getCode() ?: 1000; // unknown code if no exception code
+        $contentType = 'text/html';
+
+        if ($exception instanceof \Zaralab\Exception\ResourceNotFoundException) {
+            $response = $response->withStatus(404);
+            $errMessage = $exception->getMessage();
+        }
+
+        $error = ['error' => [ 'title' => $errTitle, 'message' => $errMessage, 'code' => $code ]];
+        if ($c->get('DEBUG')) {
+            $error['error']['exception'][] = [
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => explode("\n", $exception->getTraceAsString()),
+            ];
+            $_exception = $exception;
+
+            while ($_exception = $_exception->getPrevious()) {
+                $error['error']['exception'][] = [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => explode("\n", $exception->getTraceAsString()),
+                ];
+            }
+        }
+
+        if (strpos($request->getUri()->getPath(), '/api/') !== false) {
+            $contentType = 'application/json';
+            $output = json_encode($error);
+        } else {
+            if (!$c->get('DEBUG')) {
+                /** @var \Slim\Views\Twig $view */
+                $view = $c->get('view');
+                $output = $view->fetch('error.twig', $error);
+            } else {
+                $handler = new \Slim\Handlers\Error();
+                return $handler($request, $response, $exception);
+            }
+
+        }
+
+        $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
+        $body->write($output);
+
+        return $response
+            ->withHeader('Content-type', $contentType)
+            ->withBody($body);
+    };
+};
+
 // Doctrine
 $container['em'] = function (ContainerInterface $c) {
     $settings = $c->get('settings');

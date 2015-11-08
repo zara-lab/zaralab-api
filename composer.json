@@ -16,7 +16,9 @@
   ],
   "autoload": {
     "psr-4": {
-      "Zaralab\\": "src/Zaralab"
+      "Zaralab\\": "src/Zaralab",
+      "Behat\\RestTestingContext\\": "src/Behat/RestTestingContext",
+      "Behat\\RestTestingExtension\\": "src/Behat/RestTestingExtension"
     }
   },
   "require": {
@@ -38,7 +40,9 @@
     "nelmio/alice": "2.*",
     "doctrine/data-fixtures": "~1.0",
     "phploc/phploc": "2.*",
-    "behat/behat": "~3.0.6"
+    "behat/behat": "~3.0.6",
+    "behat/web-api-extension": "~1.0@dev",
+    "phpunit/phpunit": "~4.1.0"
   },
   "config": {
     "bin-dir": "bin"

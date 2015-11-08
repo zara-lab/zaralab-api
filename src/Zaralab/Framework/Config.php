@@ -18,23 +18,39 @@ class Config
 
     /**
      * @param string $appPath path to app/ folder
+     * @param string|null $env Force environment
+     * @param bool|null $debug Force debug
      * @return Container
      * @todo Application environment based settings
      */
-    public static function containerFactory($appPath)
+    public static function containerFactory($appPath, $env = null, $debug = null)
     {
         if (!is_readable($appPath.'/settings.php')) {
             throw new \RuntimeException("Application configuration file not found.");
         }
 
-        $env = getenv('SLIM3_ENV') ?: 'dev';
-        $debug = getenv('SLIM3_DEBUG') !== '0' && $env != 'prod';
+        if (null === $env) {
+            $env = getenv ('SLIM3_ENV') ?: 'dev';
+        }
+
+        if (null === $debug) {
+            $debug = getenv('SLIM3_DEBUG') !== '0' && $env != 'prod';
+        }
+
         $params = [];
         if (is_readable($appPath.'/parameters.php')) {
             $params = include $appPath.'/parameters.php';
         }
+        if (is_readable($appPath.'/parameters_'.$env.'.php')) {
+            $paramsEnv = include $appPath.'/parameters_'.$env.'_env.php';
+            $params = array_replace_recursive($params, $paramsEnv);
+        }
 
         $config = require $appPath.'/settings.php';
+        if (is_readable($appPath.'/settings_'.$env.'.php')) {
+            $configEnv = include $appPath.'/settings_'.$env.'.php';
+            $config = array_replace_recursive($config, $configEnv);
+        }
 
 
         $config['ENV'] = $env;

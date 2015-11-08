@@ -13,18 +13,15 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Zaralab\Framework\Console\App;
 use Zaralab\Framework\Config;
 
-$container = Config::containerFactory(__DIR__);
+// Override DEBUG/ENV
+$input = new ArgvInput();
+$env = $input->getParameterOption(array('--env', '-e'), null);
+$debug = $env === null ? null : !$input->hasParameterOption(array('--no-debug', '')) && $env != 'prod';
+
+$container = Config::containerFactory(__DIR__, $env, $debug);
 
 // Set current directory to application root so we can find root config files
 chdir(__DIR__ . '/..');
-
-// Override DEBUG/ENV
-$input = new ArgvInput();
-$env = $input->getParameterOption(array('--env', '-e'), $container->get('ENV'));
-$debug = $container->get('DEBUG') && !$input->hasParameterOption(array('--no-debug', '')) && $env != 'prod';
-
-$container['ENV'] = $env;
-$container['DEBUG'] = $debug;
 
 $app = new App($container);
 $app->setCatchExceptions(true);
