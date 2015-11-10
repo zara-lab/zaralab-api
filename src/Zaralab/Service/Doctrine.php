@@ -27,7 +27,7 @@ class Doctrine
      */
     public static function factory($settings, $debug = true)
     {
-        if ($debug) {
+        if ($debug || !function_exists('apc_fetch')) {
             $cache = new ArrayCache;
         } else {
             $cache = new ApcCache;

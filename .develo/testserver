@@ -7,7 +7,7 @@ function _run_testserver_stop {
   __zaralab_detect_test_php
   if [ ! -z "$ZARALAB_PHPPID" ]; then
     kill $ZARALAB_PHPPID
-    echo "ZaraLab PHP server stopped"
+    echo "PHP test server stopped"
   else
     _run_testserver_status
   fi
@@ -17,9 +17,9 @@ function _run_testserver_stop {
 function _run_testserver_status {
   __zaralab_detect_test_php
   if [ -z "$ZARALAB_PHPPID" ]; then
-    echo "PHP server is not running"
+    echo "PHP test server is not running"
   else
-    echo "PHP server is running on  http://127.0.0.1:8001/"
+    echo "PHP test server is running on  http://127.0.0.1:8001/"
   fi
 }
 
@@ -35,7 +35,7 @@ function _run_testserver {
   __zaralab_detect_test_php
   if [ -z "$ZARALAB_PHPPID" ]; then
     nohup php -S 0.0.0.0:8001 -t tests/server tests/server/index.php > /dev/null 2>&1 &
-    echo "PHP server started on http://127.0.0.1:8001/"
+    echo "PHP test server started on http://127.0.0.1:8001/"
   else
     _run_testserver_status
   fi

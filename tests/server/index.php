@@ -28,7 +28,7 @@ $_ENV['SLIM3_ENV'] = 'test';
 $_ENV['SLIM3_DEBUG'] = true;
 
 // Container
-$container = \Zaralab\Framework\Config::containerFactory(__DIR__.'/../../app', 'test', true);
+    $container = \Zaralab\Framework\Config::containerFactory(__DIR__.'/../../app', 'test', false);
 
 // Instantiate the app
 $app = new \Slim\App($container);

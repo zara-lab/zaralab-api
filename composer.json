@@ -31,7 +31,9 @@
     "symfony/finder": "^2.7",
     "doctrine/orm": "^2.5",
     "doctrine/migrations": "^1.0",
-    "jms/serializer": "1.*"
+    "jms/serializer": "1.*",
+    "symfony/security": "^2.7",
+    "tuupola/slim-jwt-auth": "^2.0"
   },
   "require-dev": {
     "phpspec/phpspec": "~2@dev",

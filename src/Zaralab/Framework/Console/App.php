@@ -223,7 +223,7 @@ class App extends BaseApplication
      */
     public function getApplicationBase($ns)
     {
-        return $this->container->get('BASEPATH').'/src/'.$ns;
+        return $this->container->get('PROJECT_ROOT').'/src/'.$ns;
     }
 
     /**

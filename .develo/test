@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if develo testserver; then
+    bin/behat
+fi
+
+develo testserver stop
+bin/phpspec run

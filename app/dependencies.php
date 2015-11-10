@@ -5,12 +5,16 @@ use Interop\Container\ContainerInterface;
 
 $container = $app->getContainer();
 
+//
+// Slim3 Core Related
+//
+
 // Arguments strategy
-$container['foundHandler'] = function() {
+$container['foundHandler'] = function () {
     return new \Slim\Handlers\Strategies\RequestResponseArgs();
 };
 
-// Custom error handlnig - TODO move to class
+// Custom error handlnig - FIXME move to class
 $container['errorHandler'] = function ($c) {
 
     return function ($request, $response, $exception) use ($c) {
@@ -21,15 +25,18 @@ $container['errorHandler'] = function ($c) {
         $response = $response->withStatus(500);
         $errTitle = 'Error';
         $errMessage = 'Internal Server Error';
-        $code = $exception->getCode() ?: 1000; // unknown code if no exception code
+        $code = $exception->getCode() ?: $response->getStatusCode(); // HTTP code if no exception code
         $contentType = 'text/html';
 
         if ($exception instanceof \Zaralab\Exception\ResourceNotFoundException) {
             $response = $response->withStatus(404);
             $errMessage = $exception->getMessage();
+        } elseif ($exception instanceof \Symfony\Component\Security\Core\Exception\AuthenticationException) {
+            $response = $response->withStatus($exception->getCode() ?: 401);
+            $errMessage = $exception->getMessage();
         }
 
-        $error = ['error' => [ 'title' => $errTitle, 'message' => $errMessage, 'code' => $code ]];
+        $error = ['error' => ['title' => $errTitle, 'message' => $errMessage, 'code' => $code]];
         if ($c->get('DEBUG')) {
             $error['error']['exception'][] = [
                 'code' => $exception->getCode(),
@@ -61,6 +68,7 @@ $container['errorHandler'] = function ($c) {
                 $output = $view->fetch('error.twig', $error);
             } else {
                 $handler = new \Slim\Handlers\Error();
+
                 return $handler($request, $response, $exception);
             }
 
@@ -75,6 +83,10 @@ $container['errorHandler'] = function ($c) {
     };
 };
 
+//
+// Component integrations
+//
+
 // Doctrine
 $container['em'] = function (ContainerInterface $c) {
     $settings = $c->get('settings');
@@ -88,15 +100,10 @@ $container['view'] = function (ContainerInterface $c) {
     $view = new \Slim\Views\Twig($settings['view']['template_path'], $settings['view']['twig']);
 
     // Add extensions
-    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
-    $view->addExtension(new Twig_Extension_Debug());
+    $view->addExtension(new \Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
+    $view->addExtension(new \Twig_Extension_Debug());
 
     return $view;
-};
-
-// Flash messages
-$container['flash'] = function (ContainerInterface $c) {
-    return new \Slim\Flash\Messages;
 };
 
 // monolog
@@ -114,7 +121,7 @@ $container['logger'] = function (ContainerInterface $c) {
 $container['serializer'] = function (ContainerInterface $c) {
     $settings = $c->get('settings');
     $serializer =
-        JMS\Serializer\SerializerBuilder::create()
+        \JMS\Serializer\SerializerBuilder::create()
             ->setCacheDir($settings['serializer']['cache'])
             ->setDebug($c->get('DEBUG'))
             ->build();
@@ -122,12 +129,28 @@ $container['serializer'] = function (ContainerInterface $c) {
     return $serializer;
 };
 
+// Flash messages
+$container['flash'] = function (ContainerInterface $c) {
+    return new \Slim\Flash\Messages;
+};
+
+//
+// Application services
+//
+
 // Member manager
 $container['member.manager'] = function (ContainerInterface $c) {
-    return new Zaralab\Service\MemberManager($c->get('em'), $c->get('logger'));
+    return new \Zaralab\Service\MemberManager(
+        $c->get('em'),
+        $c->get('security.encoder'),
+        $c->get('logger')
+    );
 };
 
 // API member controller
 $container['ApiMemberController'] = function (ContainerInterface $c) {
-    return new Zaralab\Controller\Api\MemberController($c);
+    return new \Zaralab\Controller\Api\MemberController($c);
 };
+
+// Security service provider
+$container->register(new \Zaralab\Service\Provider\SecurityProvider());

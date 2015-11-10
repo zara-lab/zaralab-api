@@ -4,4 +4,4 @@ cache/
 bin/
 coverage/
 .idea/
-app/parameters.php
+app/config/parameters.php

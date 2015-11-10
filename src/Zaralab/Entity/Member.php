@@ -12,14 +12,18 @@ namespace Zaralab\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Annotations;
 use JMS\Serializer\Annotation as JMS;
+use Doctrine\Common\Collections\Collection;
+use Zaralab\Model\Member as MemberModel;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="members")
  * @JMS\ExclusionPolicy("none")
  */
-class Member
+class Member extends MemberModel
 {
+
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -54,6 +58,47 @@ class Member
     protected $phone;
 
     /**
+     * The salt to use for hashing
+     *
+     * @ORM\Column(type="string")
+     * @JMS\Exclude()
+     * @var string
+     */
+    protected $salt;
+
+    /**
+     * Encrypted password, persisted.
+     *
+     * @ORM\Column(type="string")
+     * @JMS\Exclude()
+     * @var string
+     */
+    protected $password;
+
+    /**
+     * Plain password. Used for model validation. Not persisted.
+     *
+     * @JMS\Exclude()
+     * @var string
+     */
+    protected $plainPassword;
+
+    /**
+     * Not implemented.
+     *
+     * @JMS\Exclude()
+     * @var Collection
+     */
+    protected $groups;
+
+    /**
+     * @ORM\Column(type="array")
+     * @JMS\Exclude()
+     * @var array
+     */
+    protected $roles;
+
+    /**
      * @ORM\Column(type="boolean")
      * @JMS\Groups({"admin"})
      * @var bool
@@ -65,128 +110,8 @@ class Member
      */
     public function __construct()
     {
-        $this->enabled = true;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     * @return Member
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName()
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * @param string $firstName
-     * @return Member
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * @param string $lastName
-     * @return Member
-     */
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNames()
-    {
-        return $this->getFirstName().' '.$this->getLastName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     * @return Member
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPhone()
-    {
-        return $this->phone;
-    }
-
-    /**
-     * @param string $phone
-     * @return Member
-     */
-    public function setPhone($phone)
-    {
-        $this->phone = $phone;
-
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isEnabled()
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * @param boolean $enabled
-     * @return Member
-     */
-    public function setEnabled($enabled)
-    {
-        $this->enabled = $enabled;
-
-        return $this;
+        $this->enabled = false;
+        $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+        $this->roles = array();
     }
 }

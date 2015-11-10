@@ -11,8 +11,11 @@ namespace Zaralab\Service;
 
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 use Monolog\Logger;
-use Zaralab\Entity\Member;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
+use Zaralab\Model\MemberInterface;
 
 /**
  * Class MemberManager
@@ -25,40 +28,54 @@ class MemberManager
     protected $em;
 
     /**
+     * @var EncoderFactoryInterface
+     */
+    protected $encoder;
+
+    /**
      * @var Logger
      */
     protected $logger;
 
     /**
+     * @var EntityRepository
+     */
+    protected $repository;
+
+    /**
      * @param EntityManager $em
+     * @param PasswordEncoderInterface $encoder
      * @param Logger $logger
      */
-    public function __construct(EntityManager $em, Logger $logger)
+    public function __construct(EntityManager $em, PasswordEncoderInterface $encoder, Logger $logger)
     {
         $this->em = $em;
+        $this->encoder = $encoder;
         $this->logger = $logger;
     }
 
     /**
-     * Get all members ordered by member id
-     *
-     * @return array|Member[]
+     * @return EntityRepository
      */
-    public function getAll()
+    public function getRepository()
     {
-        return $this->getListBy([], ['id' => 'asc']);
+        if (null === $this->repository) {
+            $this->repository = $this->em->getRepository($this->getClass());
+        }
+
+        return $this->repository;
     }
 
     /**
-     * Get all active members, ordered by first name by default
+     * Finds a member by email
      *
-     * @param array $orderBy
+     * @param string $email
      *
-     * @return array|Member[]
+     * @return MemberInterface
      */
-    public function getAllByActive(array $orderBy = ['firstName' => 'asc'])
+    public function findMemberByEmail($email)
     {
-        return $this->getListBy(['enabled' => true], $orderBy);
+        return $this->findMemberBy(array('email' => $email));
     }
 
     /**
@@ -66,44 +83,56 @@ class MemberManager
      *
      * @param int $id
      *
-     * @return null|Member
+     * @return null|MemberInterface
      */
-    public function get($id)
+    public function findMemberById($id)
     {
-        if (!preg_match('/\d+/', $id)) {
-            throw new \InvalidArgumentException('Invalid member id, integer expected');
-        }
-
-        return $this->getOneBy(['id' => $id]);
+        return $this->findMemberBy(['id' => $id]);
     }
 
     /**
      * @param int $id
-     * @return null|Member
+     * @return null|MemberInterface
      */
-    public function getByActive($id)
+    public function findMemberByActive($id)
     {
-        if (!preg_match('/\d+/', $id)) {
-            throw new \InvalidArgumentException('Invalid member id, integer expected');
-        }
-
-        return $this->getOneBy(['id' => $id, 'enabled' => true]);
+        return $this->findMemberBy(['id' => $id, 'enabled' => true]);
     }
 
     /**
-     * Get member list by given criteria
+     * Get all members ordered by member id
+     *
+     * @return array|MemberInterface[]
+     */
+    public function getMembers()
+    {
+        return $this->findMembersBy([], ['id' => 'asc']);
+    }
+
+    /**
+     * Get all active members, ordered by first name by default
+     *
+     * @param array $orderBy
+     *
+     * @return array|MemberInterface[]
+     */
+    public function findMembersByActive(array $orderBy = ['firstName' => 'asc'])
+    {
+        return $this->findMembersBy(['enabled' => true], $orderBy);
+    }
+
+    /**
+     * Get member collection by given criteria.
      *
      * @param array $criteria
      * @param array|null $orderBy
      * @param null $limit
      * @param null $offset
      *
-     * @return array|Member[]
+     * @return array|MemberInterface[]
      */
-    public function getListBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    public function findMembersBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        $em = $this->getDoctrine();
-        $repo = $em->getRepository('Zaralab\Entity\Member');
         $this->logger->info('Member table queried (list)', [
             'criteria' => $criteria,
             'orderBy' => $orderBy,
@@ -111,45 +140,101 @@ class MemberManager
             'offset' => $offset
         ]);
 
-        return $repo->findBy($criteria, $orderBy, $limit, $offset);
+        return $this->getRepository()->findBy($criteria, $orderBy, $limit, $offset);
     }
 
     /**
-     * Get single member by given criteria
+     * Get single member by given criteria.
      *
      * @param array $criteria
      * @param array|null $orderBy
-     * @return null|Member
+     * @return null|MemberInterface
      */
-    public function getOneBy(array $criteria, array $orderBy = null)
+    public function findMemberBy(array $criteria, array $orderBy = null)
     {
-        $em = $this->getDoctrine();
-        $repo = $em->getRepository('Zaralab\Entity\Member');
         $this->logger->info('Member table queried (one)', [
             'criteria' => $criteria,
             'orderBy' => $orderBy
         ]);
 
-        return $repo->findOneBy($criteria, $orderBy);
+        return $this->getRepository()->findOneBy($criteria, $orderBy);
     }
 
     /**
-     * Get Monolog logger shorthand.
+     * Reload member from the DB.
      *
-     * @return Logger
+     * @param MemberInterface $member
      */
-    public function getMonolog()
+    public function reloadMember(MemberInterface $member)
     {
-        return $this->logger;
+        $this->em->refresh($member);
     }
 
     /**
-     * Get Doctrine Entity Manager shorthand.
+     * Updates member password
      *
-     * @return EntityManager
+     * @param MemberInterface $member
      */
-    public function getDoctrine()
+    public function updatePassword(MemberInterface $member)
     {
-        return $this->em;
+        if (0 !== strlen($password = $member->getPlainPassword())) {
+            $encoder = $this->getEncoder();
+            $member->setPassword($encoder->encodePassword($password, $member->getSalt()));
+            $member->eraseCredentials();
+        }
+    }
+
+    /**
+     * Updates a member.
+     *
+     * @param MemberInterface $member
+     * @param bool $andFlush Whether to flush the changes (default true)
+     */
+    public function updateMember(MemberInterface $member, $andFlush = true)
+    {
+        $this->updatePassword($member);
+        $this->em->persist($member);
+        if ($andFlush) {
+            $this->em->flush();
+        }
+    }
+
+    /**
+     * Deletes a member.
+     *
+     * @param MemberInterface $member
+     */
+    public function deleteMember(MemberInterface $member)
+    {
+        $this->em->remove($member);
+        $this->em->flush();
+    }
+
+    public function getClass()
+    {
+        return 'Zaralab\Entity\Member';
+    }
+
+    /**
+     * Returns an empty member instance
+     *
+     * @return MemberInterface
+     */
+    public function createMember()
+    {
+        $class = $this->getClass();
+        $user = new $class;
+
+        return $user;
+    }
+
+    /**
+     * Get password encoder
+     *
+     * @return PasswordEncoderInterface
+     */
+    public function getEncoder()
+    {
+        return $this->encoder;
     }
 }

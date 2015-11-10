@@ -7,7 +7,9 @@
 
 namespace Behat\RestTestingContext;
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Step;
+use Behat\Gherkin\Node\TableNode;
 use PHPUnit_Framework_Assert;
 
 /**
@@ -95,6 +97,60 @@ class RestContext extends BaseContext
     public function theResponseShouldBe($string)
     {
         PHPUnit_Framework_Assert::assertSame($string, $this->getResponseBody());
+    }
+
+    /**
+     * @Then /^response header field "([^"]*)" should be "([^"]*)"$/
+     */
+    public function responseHeaderFieldShouldBe($field, $value)
+    {
+        PHPUnit_Framework_Assert::assertSame($value, $this->getResponse()->getHeader($field));
+    }
+
+    /**
+     * @Then /^there is no header field "([^"]*)"$/
+     */
+    public function responseHeaderShouldNotContainField($field)
+    {
+        PHPUnit_Framework_Assert::assertNull($this->getResponse()->getHeader($field));
+    }
+
+    /**
+     * @Then /^the header field "([^"]*)" is empty$/
+     */
+    public function responseHeaderFieldShouldBeEmpty($field)
+    {
+        PHPUnit_Framework_Assert::assertEmpty($this->getResponse()->getHeader($field));
+    }
+
+    /**
+     * @Given /^I am not authenticated$/
+     */
+    public function iAmNotAuthenticated()
+    {
+
+    }
+
+    /**
+     * Json response should equal to the data table
+     *
+     * @Then /^the response should be json array:$/
+     */
+    public function theResponseShouldBeJson(TableNode $json)
+    {
+        $etalon = array();
+
+        foreach ($json->getRowsHash() as $key => $val) {
+            $etalon[$key] = $val;
+        }
+
+        $actual = $this->getResponse()->json();
+
+        PHPUnit_Framework_Assert::assertEquals(count($etalon), count($actual));
+        foreach ($etalon as $key => $needle) {
+            PHPUnit_Framework_Assert::assertArrayHasKey($key, $actual);
+            PHPUnit_Framework_Assert::assertEquals($etalon[$key], $actual[$key]);
+        }
     }
 
     /**

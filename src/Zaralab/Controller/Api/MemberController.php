@@ -39,7 +39,7 @@ class MemberController extends ApplicationController
         $serializer = $this->get('serializer');
         $context = SerializationContext::create()->setGroups(array('Default'));
 
-        $members = $manager->getAllByActive();
+        $members = $manager->findMembersByActive();
         $total = count($members);
         $result = [
             'items' => $members,
@@ -67,7 +67,7 @@ class MemberController extends ApplicationController
         /** @var Serializer $serializer */
         $serializer = $this->get('serializer');
 
-        $member = $manager->getByActive($id);
+        $member = $manager->findMemberByActive($id);
 
         if (!$member) {
             $this->getMonolog()->warning('Member not found', ['id' => $id]);

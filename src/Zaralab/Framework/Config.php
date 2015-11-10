@@ -25,7 +25,13 @@ class Config
      */
     public static function containerFactory($appPath, $env = null, $debug = null)
     {
-        if (!is_readable($appPath.'/settings.php')) {
+        include $appPath.'/functions.php';
+
+        $appPath = realpath($appPath);
+        $rootPath = realpath($appPath.'/..');
+        $configPath = $appPath.'/config';
+
+        if (!is_readable($configPath.'/settings.php')) {
             throw new \RuntimeException("Application configuration file not found.");
         }
 
@@ -38,25 +44,30 @@ class Config
         }
 
         $params = [];
-        if (is_readable($appPath.'/parameters.php')) {
-            $params = include $appPath.'/parameters.php';
+        if (is_readable($configPath.'/parameters.php')) {
+            $params = include $configPath.'/parameters.php';
         }
-        if (is_readable($appPath.'/parameters_'.$env.'.php')) {
-            $paramsEnv = include $appPath.'/parameters_'.$env.'_env.php';
+
+        if (is_readable($configPath.'/parameters_'.$env.'.php')) {
+            $paramsEnv = include $configPath.'/parameters_'.$env.'.php';
             $params = array_replace_recursive($params, $paramsEnv);
         }
 
-        $config = require $appPath.'/settings.php';
-        if (is_readable($appPath.'/settings_'.$env.'.php')) {
-            $configEnv = include $appPath.'/settings_'.$env.'.php';
+        $config = require $configPath.'/settings.php';
+        $config['PROJECT_ROOT'] = $rootPath;
+        $config['APP_PATH'] = $appPath;
+        $config['CONF_PATH'] = $configPath;
+
+        if (is_readable($configPath.'/settings_'.$env.'.php')) {
+            $configEnv = include $configPath.'/settings_'.$env.'.php';
             $config = array_replace_recursive($config, $configEnv);
         }
 
 
+        $config['SECRET'] = base64_encode(vartrue($params['secret'], 'secret'));
         $config['ENV'] = $env;
         $config['DEBUG'] = $debug;
         $config['VERSION'] = static::VERSION;
-        $config['BASEPATH'] = realpath($appPath.'/..');
         $config['APPNAME'] = isset($params['app.name']) ? $params['app.name'] : basename($config['BASEPATH']);
 
         return new Container($config);

@@ -19,6 +19,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Zaralab\Framework\Di\ContainerAwareInterface;
 
 /**
  * Load data fixtures from bundles.
@@ -75,6 +76,13 @@ EOT
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- $path")
             );
         }
+
+        foreach ($fixtures as $fixture) {
+            if ($fixture instanceof ContainerAwareInterface) {
+                $fixture->setContainer($this->getContainer());
+            }
+        }
+
         $purger = new ORMPurger($em);
         if ($input->getOption('truncate-only')) {
             $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);

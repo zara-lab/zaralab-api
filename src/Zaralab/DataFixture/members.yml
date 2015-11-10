@@ -1,25 +1,43 @@
 Zaralab\Entity\Member:
-    user1:
+    admin:
+        firstName: The Real
+        lastName: Chuck Norris
+        email: chuck.norris.real@example.com
+        phone: 666
+        enabled: true
+        setPlainPassword: [secret]
+        salt: <sha256()>
+        roles: [ ROLE_ADMIN ]
+    enabled:
         firstName: John
         lastName: Doe
         email: john.doe@example.com
         phone: 123456789
-        enabled: true
-    user2:
+        enabled: false
+        setPlainPassword: [secret]
+        salt: <sha256()>
+    disabled:
         firstName: Chuck
         lastName: Norris
         email: chuck.norris@example.com
         phone: 666
-        enabled: false
-    user{3..11}:
-        firstName: <firstName()>
-        lastName: <lastName()>
-        email: <email()>
-        phone: <phoneNumber()>
         enabled: true
-    user{12..20}:
+        setPlainPassword: [secret]
+        salt: <sha256()>
+    disabledAdmin:
+        firstName: Justin
+        lastName: Bieber
+        email: i.suck@isuck.io
+        phone: 0
+        enabled: false
+        setPlainPassword: [mom]
+        salt: <sha256()>
+        roles: [ ROLE_ADMIN ]
+    member{5..20}:
         firstName: <firstName()>
         lastName: <lastName()>
         email: <email()>
         phone: <phoneNumber()>
-        enabled: false
+        enabled: 50%? 1 : 0
+        setPlainPassword: [<password()>]
+        salt: <sha256()>

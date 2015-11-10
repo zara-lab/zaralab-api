@@ -1,0 +1,61 @@
+
+# TODO automate parameters.php.dist settings via console command
+if [ ! -f "${PWD}/app/config/parameters.php" ]; then
+    echo "You should first set your parameters. Execute:"
+    echo
+    echo "cp app/config/parameters.php.dist app/config/parameters.php"
+    echo
+    echo "Open 'app/config/parameters.php' in your favourite editor and set"
+    echo "(at least) the Database settings and restart the setup."
+    return 0
+fi
+
+COMPOSER=`which composer`
+
+if [ -z "$COMPOSER" ]; then
+    echo "composer not found, attempt to auto install"
+    curl -sS https://getcomposer.org/installer | php
+    if [ -f "${PWD}/composer.phar" ]; then
+        COMPOSER="php ${PWD}/composer.phar"
+    else
+        echo "Unable to install composer"
+        return 1
+    fi
+fi
+
+echo "executing composer from $COMPOSER"
+
+if [ "update" = "$2" ]; then
+    echo "updating..."
+    COMPOSER="$COMPOSER update"
+else
+    echo "installing..."
+    COMPOSER="$COMPOSER install"
+fi
+
+${COMPOSER}
+
+if [ "update" != "$2" ]; then
+    app/console database:drop --force
+    if ! app/console database:create; then
+        echo "Failed to create your database, mysql up?!"
+        echo "Get it up and restart the setup."
+        return 1
+    fi
+fi
+
+app/console migrations:migrate --no-interaction
+app/console fixtures:load --truncate --no-interaction
+
+if [[ $? -eq 0 ]]; then
+    # completely safe even if it's running
+    echo
+    develo server start
+    echo
+    echo "All is setup. Happy coding!"
+    return 0
+fi
+
+echo
+echo
+echo "There are some errors, please inspect. And happy coding!"
