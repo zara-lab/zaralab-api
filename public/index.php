@@ -14,7 +14,7 @@ require __DIR__.'/../vendor/autoload.php';
 session_start();
 
 // Container
-$container = \Zaralab\Framework\Config::containerFactory(__DIR__.'/../app');
+$container = \Zaralab\Framework\Config::containerFactory(__DIR__.'/../app', null, false);
 
 // Instantiate the app
 $app = new \Slim\App($container);

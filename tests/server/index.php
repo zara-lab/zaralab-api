@@ -24,9 +24,6 @@ require __DIR__.'/../../vendor/autoload.php';
 
 session_start();
 
-$_ENV['SLIM3_ENV'] = 'test';
-$_ENV['SLIM3_DEBUG'] = true;
-
 // Container
     $container = \Zaralab\Framework\Config::containerFactory(__DIR__.'/../../app', 'test', false);
 

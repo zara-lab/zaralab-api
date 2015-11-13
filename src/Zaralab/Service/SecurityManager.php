@@ -52,8 +52,7 @@ class SecurityManager extends ContainerAware
         $userChecker = $this->container['security.user_checker'];
 
         try {
-            if (!$member) {
-            } elseif ($member) {
+            if ($member) {
                 $userChecker->checkPreAuth($member);
                 if($encoder->isPasswordValid($member->getPassword(), $password, $member->getSalt())) {
                     $encodedPassword = $encoder->encodePassword($password, $member->getSalt());

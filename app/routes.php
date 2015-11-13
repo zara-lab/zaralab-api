@@ -23,20 +23,37 @@ $app->group('/api', function() {
 
         // Delete
         $this->delete('/{id:[\d]+}', 'ApiMemberController:deleteAction')->setName('api_member_update_delete');
-    })->add(function ($request, $response, $next) {
-        $jsonResponse = $next($request, $response);
-        // Force JSON content type
-        return $jsonResponse->withHeader('Content-type', 'application/json');
     });
 
     // TODO move to class, move logic to the security manager
     $this->post('/authenticate', function(Slim\Http\Request $request, Slim\Http\Response $response){
         $c = $this->getContainer();
 
+        // getParsedBody is destroying the body content
+        $parseRequest = clone $request;
+        $bodyRaw = $parseRequest->getBody()->getContents();
+        unset($parseRequest);
+
+        $params = $request->getParsedBody();
+
+        // FIX  - REQUESTS WITH BAD HEADERS
+        if (null === $params && $bodyRaw) {
+            if ($bodyRaw[0] === '{') {
+                $params = json_decode($bodyRaw, true);
+            } else {
+                parse_str($bodyRaw, $params);
+            }
+        }
+
+        if (empty($params)) {
+            throw new \Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException('Authentication credentials could not be found.', 400);
+        }
+
         /** @var \Zaralab\Service\SecurityManager $sm */
         $sm = $c['security.manager'];
-        $params = $request->getParsedBody();
-        $member = $sm->authenticate(varset($params['email']), varset($params['password']));
+        $params['email'] = isset($params['email']) ? rawurldecode($params['email']) : '';
+
+        $member = $sm->authenticate($params['email'], varset($params['password']));
 
         if ($member) {
             /** @var \Slim\App $app */
@@ -54,13 +71,13 @@ $app->group('/api', function() {
                 'nbf'  => $notBefore,        // Not before
                 'exp'  => $expire,           // Expire
                 'data' => [                  // Data related to the signer user
-                    'id'   => $member->getId(), // userid from the users table
-                    'email' => $member->getEmail(), // User email
+                'id'   => $member->getId(), // userid from the users table
+                'email' => $member->getEmail(), // User email
                 ]
             ];
 
             $jwt = JWT::encode($token, $sm->secret());
-            return $response->write(json_encode(['token' => $jwt]))->withHeader('X-Authenticated-With', str_replace('@', '(at)', $member->getEmail()));
+            return $response->write(json_encode(['token' => $jwt]));
         } else {
             throw new \Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException('Authentication credentials could not be found.', 400);
         }

@@ -21,6 +21,35 @@ return [
             ],
         ],
 
+        // Error handler
+        'errorHandler' => [
+            'html_template_path'       => 'error.html.twig',
+            'xml_template_path'        => 'error.xml.twig',
+            'default_content_type'     => 'application/json',
+            'allowed_content_types'    => ['text/html', 'application/json'],
+            'json_encode_options'      => JSON_PRETTY_PRINT,
+            'exceptions_with_code'     => [
+                'Symfony\Component\Security\Core\Exception\AuthenticationException' => 401
+            ],
+            'exceptions_without_code'  => [
+                'Zaralab\Exception\ResourceNotFoundException' => 404,
+                'Zaralab\Exception\NotAllowedException'       => 405,
+            ],
+            'exceptions_with_messages' => [
+                'Zaralab\Exception\ResourceNotFoundException',
+                'Zaralab\Exception\NotAllowedException',
+                'Symfony\Component\Security\Core\Exception\AuthenticationException',
+            ],
+        ],
+
+        // View settings
+        'content_type.middleware' => [
+            'application/json' => [
+                'path'   => [ '/api' ],
+                'ignore' => [ 'api/ping' ]
+            ]
+        ],
+
         // Monolog settings
         'logger' => [
             'name'              => varset($params['app.name'], 'app'),

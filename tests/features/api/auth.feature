@@ -1,25 +1,45 @@
 @fixtures
-Feature: Testing Member Rest service
-  In order to retrieve and manage member information through the service
-  as a registered service user
-  I want to see if the service work as expected
+Feature: Testing JSON Web Token of the REST service ("api_auth" named route)
+  In order to get access to protected areas of the service
+  as a public visitor
+  I'm able to retrieve JSON Web Token with correct credentials only
 
-  Scenario: Request JSON Web Token success - api_auth route
-    Given I set header "Content-type" with value "application/json"
-      And I send a POST request to "/api/authenticate" with values:
-        | email    | chuck.norris.real@example.com |
-        | password | secret                        |
-    Then the response code should be 200
-      And the response should contain field "token"
-      And field "token" in the response should be "string"
-      And response header field "X-Authenticated-With" should be "chuck.norris.real(at)example.com"
+  Scenario: Credentials success
+    When I authenticate as "member@example.com" with password "secret"
+      Then the response code should be 200
+        And the response should contain field "token"
+        And field "token" in the response should be "string"
+        And in the response there is no field called "error"
+        And print authentication token
 
-  Scenario: Request JSON Web Token password error - api_auth route
-    When I set header "Content-type" with value "application/json"
-    And I send a POST request to "/api/authenticate" with values:
-      | email    | chuck.norris.real@example.com |
-      | password | badPassword                   |
-    Then the response code should be 400
-    And in the response there is no field called "token"
-    And field "error" in the response should be "array"
-    And the header field "X-Authenticated-With" is empty
+  Scenario: Disabled member access is denied
+    When I authenticate as "disabled@example.com" with password "secret"
+      Then the response code should be 401
+          And in the response there is no field called "token"
+        And field "error" in the response should be "array"
+
+  Scenario: Credentials with wrong password
+    When I authenticate as "member@example.com" with password "bad password"
+      Then the response code should be 400
+        And in the response there is no field called "token"
+        And field "error" in the response should be "array"
+
+  Scenario: Credentials with wrong email
+    When I authenticate as "bad member" with password "no matter the password"
+      Then the response code should be 400
+      And in the response there is no field called "token"
+      And field "error" in the response should be "array"
+
+  Scenario: Empty credentials
+    When I authenticate as "" with password "no matter the password"
+      Then the response code should be 400
+        And in the response there is no field called "token"
+        And field "error" in the response should be "array"
+    When I authenticate as "chuck.norris.real@example.com" with password ""
+      Then the response code should be 400
+        And in the response there is no field called "token"
+        And field "error" in the response should be "array"
+    When I authenticate as "" with password ""
+      Then the response code should be 400
+        And in the response there is no field called "token"
+        And field "error" in the response should be "array"

@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+        <title>{{ error.code }} {{ error.message }}</title>
+        <link href="//fonts.googleapis.com/css?family=Lato:300" rel="stylesheet" type="text/css">
+        <link href="{{ base_url() }}/css/style.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        {% if error.exception is not empty -%}
+            <h1>{{ error.code }} {{ error.message }}</h1>
+            <p>The application could not run because of the following error:</p>
+            {% for e in error.exception -%}
+                {% if loop.first -%}
+                    <h2>Details</h2>
+                {% else -%}
+                    <h2>Previous exception</h2>
+                {% endif -%}
+                        <div><strong>Type:</strong> {{ e.type }}</div>
+                    {% if e.code is not empty  -%}
+                        <div><strong>Code:</strong> {{ e.code }}</div>
+                    {% endif -%}
+                    {% if e.message is not empty  -%}
+                        <div><strong>Message:</strong> {{ e.message }}</div>
+                    {% endif -%}
+                    {% if e.file is not empty  -%}
+                        <div><strong>File:</strong> {{ e.file }}</div>
+                    {% endif -%}
+                    {% if e.line is not empty  -%}
+                        <div><strong>Line:</strong> {{ e.line }}</div>
+                    {% endif -%}
+                    {% if e.trace is not empty  -%}
+                        <div><strong>Trace:</strong><br><br>
+                            {{ e.trace|join("\n\t\t\t\t\t\t")|nl2br -}}
+                        </div>
+                    {% endif -%}
+            {% endfor -%}
+        {% else -%}
+            <h1>Something went wrong...</h1>
+            <div>{{ error.message }}</div>
+        {% endif -%}
+    </body>
+</html>
+        

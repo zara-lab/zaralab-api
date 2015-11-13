@@ -7,6 +7,7 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Zaralab\Model\GroupInterface;
 use Zaralab\Model\MemberInterface;
+use Zaralab\Spec\Matcher as Match;
 
 class MemberSpec extends ObjectBehavior
 {
@@ -89,7 +90,7 @@ class MemberSpec extends ObjectBehavior
 
     function it_should_generate_salt_on_init()
     {
-        $this->getSalt()->shouldReturnNonEmptyString();
+        $this->getSalt()->shouldNotBeEmptyString();
     }
 
     function it_should_have_fluent_salt_setter()
@@ -304,10 +305,8 @@ class MemberSpec extends ObjectBehavior
 
     function getMatchers()
     {
-        return array(
-            'returnNonEmptyString' => function($result) {
-                return is_string($result) && strlen($result) > 0;
-            }
-        );
+        return [
+            'beEmptyString'     => new Match\StringEmpty(),
+        ];
     }
 }

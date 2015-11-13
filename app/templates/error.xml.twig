@@ -1,0 +1,13 @@
+<error>
+    <message></message>
+    <code></code>
+{% if error.exception is not empty -%}
+{% for e in error.exception -%}
+    <code>{{ e.type }}</code>
+    <type>{{ e.type }}</type>
+    <message>{{ e.message }}</message>
+    <line>{{ e.type }}</line>
+    <trace>{{ e.trace|join("\n\t\t\t\t\t\t") }}</trace>
+{% endfor -%}
+{% endif -%}
+</error>

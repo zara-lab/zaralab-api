@@ -2,7 +2,7 @@ Zaralab\Entity\Member:
     admin:
         firstName: The Real
         lastName: Chuck Norris
-        email: chuck.norris.real@example.com
+        email: admin@example.com
         phone: 666
         enabled: true
         setPlainPassword: [secret]
@@ -11,28 +11,28 @@ Zaralab\Entity\Member:
     enabled:
         firstName: John
         lastName: Doe
-        email: john.doe@example.com
+        email: member@example.com
         phone: 123456789
-        enabled: false
-        setPlainPassword: [secret]
-        salt: <sha256()>
-    disabled:
-        firstName: Chuck
-        lastName: Norris
-        email: chuck.norris@example.com
-        phone: 666
         enabled: true
         setPlainPassword: [secret]
         salt: <sha256()>
     disabledAdmin:
+        firstName: Chuck
+        lastName: Norris
+        email: disabled.admin@example.com
+        phone: 666
+        enabled: true
+        setPlainPassword: [secret]
+        salt: <sha256()>
+        roles: [ ROLE_ADMIN ]
+    disabled:
         firstName: Justin
         lastName: Bieber
-        email: i.suck@isuck.io
+        email: disabled@example.com
         phone: 0
         enabled: false
         setPlainPassword: [mom]
         salt: <sha256()>
-        roles: [ ROLE_ADMIN ]
     member{5..20}:
         firstName: <firstName()>
         lastName: <lastName()>
