@@ -3,6 +3,10 @@
 // API routes group
 $app->group('/api', function() {
 
+    $this->get('/ping', function($request, $response) {
+        return $response;
+    });
+
     // REST Members group
     $this->group('/member', function() {
 

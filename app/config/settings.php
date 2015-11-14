@@ -42,11 +42,11 @@ return [
             ],
         ],
 
-        // View settings
+        // Content type middleware settings
         'content_type.middleware' => [
             'application/json' => [
                 'path'   => [ '/api' ],
-                'ignore' => [ 'api/ping' ]
+                'ignore' => [  ]
             ]
         ],
 

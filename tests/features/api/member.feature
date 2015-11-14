@@ -12,7 +12,7 @@ Feature: Testing Member Rest service
           | id          | 1                               |
           | first_name  | The Real                        |
           | last_name   | Chuck Norris                    |
-          | email       | admin@example.com   |
+          | email       | admin@example.com               |
         And in the response there is no field called "phone"
         And in the response there is no field called "enabled"
         And in the response there is no field called "salt"
