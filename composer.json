@@ -21,6 +21,7 @@
   },
   "require": {
     "php": ">=5.4",
+    "ext-pdo_mysql": "*",
     "slim/slim": "^3.0@beta",
     "slim/twig-view": "^1.1",
     "slim/flash": "^0.1.0",
@@ -34,14 +35,16 @@
     "tuupola/slim-jwt-auth": "^2.0"
   },
   "require-dev": {
+    "ext-xdebug": "*",
     "phpspec/phpspec": "~2@dev",
     "phpspec/prophecy": "~1.0",
     "henrikbjorn/phpspec-code-coverage": "~0.2",
     "nelmio/alice": "2.*",
     "doctrine/data-fixtures": "~1.0",
     "phploc/phploc": "2.*",
-    "behat/behat": "~3.0.6",
-    "phpunit/phpunit": "~4.1.0"
+    "behat/behat": "~3.0",
+    "guzzlehttp/guzzle": "4 - 5",
+    "phpunit/phpunit": "~4.0"
   },
   "config": {
     "bin-dir": "bin"
