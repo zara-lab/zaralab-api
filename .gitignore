@@ -4,4 +4,5 @@ cache/
 bin/
 coverage/
 .idea/
+composer.phar
 app/config/parameters.php

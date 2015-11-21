@@ -24,6 +24,11 @@ function _run_server_status {
 }
 
 # magic function called by develo run helper
+function _run_server_help {
+  __zaralab_server_help
+}
+
+# magic function called by develo run helper
 function _run_server {
   if [ ! -z "$1" ] && [ "$1" != "start" ]; then
     echo "Unknown sub-command $1"

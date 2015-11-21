@@ -36,7 +36,7 @@ fi
 ${COMPOSER}
 
 if [ "update" != "$2" ]; then
-    app/console database:drop --force
+    app/console database:drop --quiet --force
     if ! app/console database:create; then
         echo "Failed to create your database, mysql up?!"
         echo "Get it up and restart the setup."
@@ -51,6 +51,8 @@ if [[ $? -eq 0 ]]; then
     # completely safe even if it's running
     echo
     develo server start
+    echo "Manage local PHP server help"
+    develo server help
     echo
     echo "All is setup. Happy coding!"
     return 0
