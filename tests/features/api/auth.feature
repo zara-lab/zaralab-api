@@ -14,9 +14,10 @@ Feature: Testing JSON Web Token of the REST service ("api_auth" named route)
 
   Scenario: Disabled member access is denied
     When I authenticate as "disabled@example.com" with password "secret"
-      Then the response code should be 401
-          And in the response there is no field called "token"
+      Then the response code should be 403
+        And in the response there is no field called "token"
         And field "error" in the response should be "array"
+        And the response should contain "Account is disabled"
 
   Scenario: Credentials with wrong password
     When I authenticate as "member@example.com" with password "bad password"

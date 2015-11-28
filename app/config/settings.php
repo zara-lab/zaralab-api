@@ -29,6 +29,7 @@ return [
             'allowed_content_types'    => ['text/html', 'application/json'],
             'json_encode_options'      => JSON_PRETTY_PRINT,
             'exceptions_with_code'     => [
+                'Symfony\Component\Security\Core\Exception\DisabledException' => 403,
                 'Symfony\Component\Security\Core\Exception\AuthenticationException' => 401
             ],
             'exceptions_without_code'  => [
@@ -38,6 +39,7 @@ return [
             'exceptions_with_messages' => [
                 'Zaralab\Exception\ResourceNotFoundException',
                 'Zaralab\Exception\NotAllowedException',
+                'Symfony\Component\Security\Core\Exception\DisabledException',
                 'Symfony\Component\Security\Core\Exception\AuthenticationException',
             ],
         ],
