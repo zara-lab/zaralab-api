@@ -21,26 +21,31 @@ Feature: Testing JSON Web Token of the REST service ("api_auth" named route)
 
   Scenario: Credentials with wrong password
     When I authenticate as "member@example.com" with password "bad password"
-      Then the response code should be 400
+      Then the response code should be 401
         And in the response there is no field called "token"
         And field "error" in the response should be "array"
+        And the response should contain "Wrong email and password combination."
 
   Scenario: Credentials with wrong email
     When I authenticate as "bad member" with password "no matter the password"
-      Then the response code should be 400
+      Then the response code should be 401
       And in the response there is no field called "token"
       And field "error" in the response should be "array"
+      And the response should contain "Wrong email and password combination."
 
   Scenario: Empty credentials
     When I authenticate as "" with password "no matter the password"
       Then the response code should be 400
         And in the response there is no field called "token"
         And field "error" in the response should be "array"
+        And the response should contain "Authentication credentials could not be found."
     When I authenticate as "chuck.norris.real@example.com" with password ""
       Then the response code should be 400
         And in the response there is no field called "token"
         And field "error" in the response should be "array"
+        And the response should contain "Authentication credentials could not be found."
     When I authenticate as "" with password ""
       Then the response code should be 400
         And in the response there is no field called "token"
         And field "error" in the response should be "array"
+        And the response should contain "Authentication credentials could not be found."

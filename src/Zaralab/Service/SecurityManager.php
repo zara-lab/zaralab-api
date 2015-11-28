@@ -62,6 +62,8 @@ class SecurityManager extends ContainerAware
                     if ($match) {
                         $authenticatedToken = new UsernamePasswordToken($member, $password, self::PROVIDER_KEY, $member->getRoles());
                         $this->container['security.token_storage']->setToken($authenticatedToken);
+                    } else {
+                        throw new AuthenticationCredentialsNotFoundException('Wrong email and password combination.', 401);
                     }
                 }
             }
@@ -75,7 +77,11 @@ class SecurityManager extends ContainerAware
         }
 
         if (null === $this->container['member']) {
-            throw new AuthenticationCredentialsNotFoundException('Authentication credentials could not be found.', 400);
+            if (empty($email) || empty($password)) {
+                throw new AuthenticationCredentialsNotFoundException('Authentication credentials could not be found.', 400);
+            }
+
+            throw new AuthenticationCredentialsNotFoundException('Wrong email and password combination.', 401);
         }
 
 
