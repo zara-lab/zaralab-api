@@ -6,7 +6,7 @@ Feature: Testing Member Rest service
 
   Scenario: Request active member - api_member_show route
     Given I am not authenticated
-    When I send a GET request to "member/1"
+    When I send a GET request to "members/1"
       Then the response code should be 200
         And the response should be json array:
           | id          | 1                               |
@@ -20,14 +20,14 @@ Feature: Testing Member Rest service
 
   Scenario: Request inactive member - api_member_show route
     Given I am not authenticated
-    When I send a GET request to "member/4"
+    When I send a GET request to "members/4"
       Then the response code should be 404
         And field "error" in the response should be "array"
         And the response should contain "Member not found"
 
   Scenario: Get a list of active members - api_member_list route
     Given I am not authenticated
-    When I send a GET request to "member"
+    When I send a GET request to "members"
       Then the response code should be 200
         And field "total_items" in the response should be "integer"
         And field "items" in the response should be "array"

@@ -8,7 +8,7 @@ $app->group('/api', function() {
     });
 
     // REST Members group
-    $this->group('/member', function() {
+    $this->group('/members', function() {
 
         // List
         $this->get('', 'ApiMemberController:listAction')->setName('api_member_list');
