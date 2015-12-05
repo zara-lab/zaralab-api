@@ -1,17 +1,28 @@
 {
-  "name": "akrabat/slim3-skeleton",
-  "description": "Simple Slim Framework 3 skeleton with Twig & Monolog.",
+  "name": "zaralab/api",
+  "description": "Slim3 based ZaraLab API",
   "license": "BSD-3-Clause",
   "type": "project",
   "keywords": [
-    "slim-framework",
-    "skeleton"
+    "zaralab",
+    "slim-framework"
   ],
   "authors": [
     {
-      "name": "Rob Allen",
-      "email": "rob@akrabat.com",
-      "homepage": "http://akrabat.com"
+      "name": "Miroslav Yovchev",
+      "email": "m.yovchev@corllete.com",
+      "homepage": "http://corllete.com"
+    },
+    {
+      "name": "George Petkov",
+      "email": "gpetkoff98@abv.bg"
+    },
+    {
+      "name": "Radoslav Enev",
+      "email": "rado_bg98@abv.bg"
+    },
+    {
+      "name": "Viktor Terziev"
     }
   ],
   "autoload": {
