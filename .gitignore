@@ -6,3 +6,4 @@ coverage/
 .idea/
 composer.phar
 app/config/parameters.php
+nbproject/
