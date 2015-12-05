@@ -4,9 +4,15 @@ namespace spec\Zaralab\Entity;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Zaralab\Model\MemberInterface;
 
 class MacAddressSpec extends ObjectBehavior
 {
+    function let(MemberInterface $member)
+    {
+        $this->beConstructedWith($member);
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType('Zaralab\Entity\MacAddress');
@@ -37,4 +43,10 @@ class MacAddressSpec extends ObjectBehavior
         $this->setAddress('3D:F2:C9:A6:B3:4F');
         $this->getAddress()->shouldReturn('3d-f2-c9-a6-b3-4f');
     }
+
+    function it_should_have_member(MemberInterface $member)
+    {
+        $this->getMember()->shouldReturn($member);
+    }
+
 }
