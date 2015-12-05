@@ -5,6 +5,7 @@ namespace spec\Zaralab\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Zaralab\Entity\MacAddress;
 use Zaralab\Model\GroupInterface;
 use Zaralab\Model\MemberInterface;
 use Zaralab\Spec\Matcher as Match;
@@ -301,6 +302,45 @@ class MemberSpec extends ObjectBehavior
     {
         $this->setEmail('email');
         $this->__toString()->shouldBe('email');
+    }
+
+    function it_should_have_empty_macaddress_collection_by_default()
+    {
+        $this->getMacAddresses()->shouldHaveType('Doctrine\Common\Collections\Collection');
+    }
+
+    function it_should_have_fluent_macaddress_add_method(MacAddress $macAddress)
+    {
+        $this->addMacAddress($macAddress)->shouldReturnAnInstanceOf('Zaralab\Model\MemberInterface');
+    }
+
+    function it_should_be_able_to_add_new_macaddress(MacAddress $macAddress, MacAddress $macAddress2)
+    {
+        $this->addMacAddress($macAddress);
+        $this->addMacAddress($macAddress2);
+        $this->getMacAddresses()->shouldHaveCount(2);
+    }
+
+    function it_should_not_duplicate_macaddresses(MacAddress $macAddress)
+    {
+        $this->addMacAddress($macAddress);
+        $this->addMacAddress($macAddress);
+        $this->getMacaddresses()->shouldHaveCount(1);
+    }
+
+    function it_should_be_able_to_remove_macaddress(MacAddress $macAddress)
+    {
+        $this->addMacAddress($macAddress);
+        $this->getMacaddresses()->shouldHaveCount(1);
+        $this->removeMacAddress($macAddress);
+        $this->getMacaddresses()->shouldHaveCount(0);
+    }
+
+    function it_should_be_able_to_determine_if_macaddress_exist(MacAddress $macAddress)
+    {
+        $this->shouldNotHaveMacAddress($macAddress);
+        $this->addMacAddress($macAddress);
+        $this->shouldHaveMacAddress($macAddress);
     }
 
     function getMatchers()

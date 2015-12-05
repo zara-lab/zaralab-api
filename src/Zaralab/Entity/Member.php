@@ -9,6 +9,7 @@
 
 namespace Zaralab\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Annotations;
 use JMS\Serializer\Annotation as JMS;
@@ -106,6 +107,11 @@ class Member extends MemberModel
     protected $enabled;
 
     /**
+     * @var ArrayCollection|MacAddress[]
+     */
+    protected $macAddresses;
+
+    /**
      * Constructor - member enabled by default when created
      */
     public function __construct()
@@ -113,5 +119,41 @@ class Member extends MemberModel
         $this->enabled = false;
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
         $this->roles = array();
+        $this->macAddresses = new ArrayCollection();
+    }
+
+    /**
+     * @return ArrayCollection|MacAddress[]
+     */
+    public function getMacAddresses()
+    {
+        return $this->macAddresses;
+    }
+
+    /**
+     * @param MacAddress $macAddress
+     * @return $this
+     */
+    public function addMacAddress(MacAddress $macAddress)
+    {
+        if (!$this->macAddresses->contains($macAddress)) {
+            $this->macAddresses->add($macAddress);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param MacAddress $macAddress
+     * @return bool
+     */
+    public function removeMacAddress(MacAddress $macAddress)
+    {
+        return $this->macAddresses->removeElement($macAddress);
+    }
+
+    public function hasMacAddress(MacAddress $macAddress)
+    {
+        return $this->macAddresses->contains($macAddress);
     }
 }
