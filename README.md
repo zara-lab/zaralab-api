@@ -47,8 +47,8 @@ $ cd zaralab-api
 - Set some parameters:
 
 ```
-$ cp api/config/parameters.php.dist api/config/parameters.php
-$ vim api/config/parameters.php
+$ cp app/config/parameters.php.dist app/config/parameters.php
+$ vim app/config/parameters.php
 ```
 
 Use your favorite editor in case you don't use `vim`.
