@@ -3,8 +3,17 @@
 // API routes group
 $app->group('/api', function() {
 
-    $this->get('/ping', function($request, $response) {
+    $this->get('/ping', function(Slim\Http\Request $request, Slim\Http\Response $response) {
         return $response;
+    });
+
+    $this->post('/echo', function(Slim\Http\Request $request, Slim\Http\Response $response) {
+        $body = $request->getParsedBody();
+        if (empty($body)) {
+            return $response->write('');
+        }
+
+        return $response->write(json_encode($request->getParsedBody(), JSON_PRETTY_PRINT));
     });
 
     // REST Members group
@@ -33,21 +42,7 @@ $app->group('/api', function() {
     $this->post('/authenticate', function(Slim\Http\Request $request, Slim\Http\Response $response){
         $c = $this->getContainer();
 
-        // getParsedBody is destroying the body content
-        $parseRequest = clone $request;
-        $bodyRaw = $parseRequest->getBody()->getContents();
-        unset($parseRequest);
-
         $params = $request->getParsedBody();
-
-        // FIX  - REQUESTS WITH BAD HEADERS
-        if (null === $params && $bodyRaw) {
-            if ($bodyRaw[0] === '{') {
-                $params = json_decode($bodyRaw, true);
-            } else {
-                parse_str($bodyRaw, $params);
-            }
-        }
 
         if (empty($params)) {
             throw new \Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException('Authentication credentials could not be found.', 400);
