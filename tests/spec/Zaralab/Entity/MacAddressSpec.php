@@ -5,11 +5,11 @@ namespace spec\Zaralab\Entity;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class MacAdressSpec extends ObjectBehavior
+class MacAddressSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Zaralab\Entity\MacAdress');
+        $this->shouldHaveType('Zaralab\Entity\MacAddress');
     }
 
     function it_should_have_id()

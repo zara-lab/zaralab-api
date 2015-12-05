@@ -2,7 +2,7 @@
 
 namespace Zaralab\Entity;
 
-class MacAdress
+class MacAddress
 {
     /**
      * @var int
