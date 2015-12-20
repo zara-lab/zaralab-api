@@ -3,20 +3,32 @@
 namespace Zaralab\Entity;
 
 use Zaralab\Model\MemberInterface;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Annotations;
 
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="mac_addresses")
+ */
 class MacAddress
 {
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      * @var int
      */
     protected $id;
 
     /**
+     * @ORM\Column("mac_address", type="string", length=17)
      * @var string
      */
     protected $address;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Member", inversedBy="macAddresses", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="member_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      * @var Member
      */
     protected $member;

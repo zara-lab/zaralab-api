@@ -107,6 +107,7 @@ class Member extends MemberModel
     protected $enabled;
 
     /**
+     * @ORM\OneToMany(targetEntity="MacAddress", mappedBy="member")
      * @var ArrayCollection|MacAddress[]
      */
     protected $macAddresses;

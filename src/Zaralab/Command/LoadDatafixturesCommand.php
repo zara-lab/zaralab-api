@@ -71,6 +71,7 @@ EOT
         $loader = new DataFixturesLoader();
         $loader->loadFromDirectory($path);
         $fixtures = $loader->getFixtures();
+
         if (!$fixtures) {
             throw new InvalidArgumentException(
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- $path")
@@ -85,8 +86,10 @@ EOT
 
         $purger = new ORMPurger($em);
         if ($input->getOption('truncate-only')) {
+            $em->getConnection()->executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
             $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
             $purger->purge();
+            $em->getConnection()->executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
             exit(0);
         }
 
@@ -95,7 +98,15 @@ EOT
         $executor->setLogger(function ($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
+        if ($input->getOption('truncate')) {
+            $em->getConnection()->executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+        }
+
         $executor->execute($fixtures, $input->getOption('append'));
+
+        if ($input->getOption('truncate')) {
+            $em->getConnection()->executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+        }
     }
 
     /**
