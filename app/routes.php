@@ -40,7 +40,7 @@ $app->group('/api', function() {
 
     // TODO move to class, move logic to the security manager
     $this->post('/authenticate', function(Slim\Http\Request $request, Slim\Http\Response $response){
-        $c = $this->getContainer();
+        $c = $this;
 
         $params = $request->getParsedBody();
 
@@ -75,7 +75,7 @@ $app->group('/api', function() {
                 ]
             ];
 
-            $jwt = JWT::encode($token, $sm->secret());
+            $jwt = \Firebase\JWT\JWT::encode($token, $sm->secret());
             return $response->write(json_encode(['token' => $jwt]));
         } else {
             throw new \Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException('Authentication credentials could not be found.', 400);

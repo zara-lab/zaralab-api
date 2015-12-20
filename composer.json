@@ -39,6 +39,7 @@
     "monolog/monolog": "^1.13",
     "symfony/console": "^2.7",
     "symfony/finder": "^2.7",
+    "symfony/validator": "~3.0",
     "doctrine/orm": "^2.5",
     "doctrine/migrations": "^1.0",
     "jms/serializer": "1.*",

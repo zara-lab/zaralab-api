@@ -100,3 +100,10 @@ $container['ApiMemberController'] = function (ContainerInterface $c) {
 
 // Security service provider
 $container->register(new \Zaralab\Service\Provider\SecurityProvider());
+
+// Validator with doctrine annotation support
+$container['validator'] = function (ContainerInterface $c) {
+    return \Symfony\Component\Validator\Validation::createValidatorBuilder()
+        ->enableAnnotationMapping()
+        ->getValidator();
+};
