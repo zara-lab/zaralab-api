@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/zara-lab/zaralab-api.svg?branch=master)](https://travis-ci.org/zara-lab/zaralab-api)
+
 # ZaraLab API
 
 A RESTfull API by [ZaraLab][zaralab] team.
