@@ -12,7 +12,7 @@ return [
     'db.driver'    => 'pdo_mysql',
     'db.host'      => 'localhost',
     'db.name'      => 'zaralab',
-    'db.user'      => '',
+    'db.user'      => 'root',
     'db.password'  => '',
     'secret'       => 'secret_change_it_and_keep_it_safe',
 ];
