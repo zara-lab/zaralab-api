@@ -1,0 +1,26 @@
+language: php
+
+php:
+  - 5.5
+#  - 5.6 investigating travis 5.6 fail, passed in local tests
+  - 7.0
+
+env:
+  - DB: mysql
+
+services:
+  - mysql
+
+install:
+  - git clone https://github.com/mignev/develo.git
+  - source develo/develo.sh
+  - composer install
+  - cp app/config/parameters.php.dist app/config/parameters.php
+  - develo setup
+
+before_script:
+  - develo testserver
+
+script:
+  - bin/behat
+  - bin/phpspec run
