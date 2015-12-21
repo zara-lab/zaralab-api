@@ -108,6 +108,8 @@ class Member extends MemberModel
 
     /**
      * @ORM\OneToMany(targetEntity="MacAddress", mappedBy="member")
+     * @JMS\Groups({"admin"})
+     * @JMS\MaxDepth(depth=1)
      * @var ArrayCollection|MacAddress[]
      */
     protected $macAddresses;

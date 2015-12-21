@@ -8,11 +8,16 @@ Feature: Testing Member Rest service
     Given I am not authenticated
     When I send a GET request to "members/1"
       Then the response code should be 200
-        And the response should be json array:
-          | id          | 1                               |
-          | first_name  | The Real                        |
-          | last_name   | Chuck Norris                    |
-          | email       | admin@example.com               |
+        And the response should contain json:
+        """
+        {
+          "id": 1,
+          "first_name": "The Real",
+          "last_name": "Chuck Norris",
+          "email": "admin@example.com"
+        }
+        """
+        And in the response there is no field called "mac_addresses"
         And in the response there is no field called "phone"
         And in the response there is no field called "enabled"
         And in the response there is no field called "salt"
@@ -31,6 +36,7 @@ Feature: Testing Member Rest service
       Then the response code should be 200
         And field "total_items" in the response should be "integer"
         And field "items" in the response should be "array"
+        And in the response there is no field called "mac_addresses"
         And in the response there is no field called "phone"
         And in the response there is no field called "enabled"
         And in the response there is no field called "salt"

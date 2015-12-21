@@ -37,7 +37,9 @@ class MemberController extends ApplicationController
         $manager = $this->get('member.manager');
         /** @var Serializer $serializer */
         $serializer = $this->get('serializer');
-        $context = SerializationContext::create()->setGroups(array('Default'));
+        $context = SerializationContext::create()
+            ->enableMaxDepthChecks()
+            ->setGroups(array('Default'));
 
         $members = $manager->findMembersByActive();
         $total = count($members);
@@ -73,7 +75,9 @@ class MemberController extends ApplicationController
             $this->getMonolog()->warning('Member not found', ['id' => $id]);
             throw new ResourceNotFoundException('Member not found');
         }
-        $context = SerializationContext::create()->setGroups(array('Default'));
+        $context = SerializationContext::create()
+            ->enableMaxDepthChecks()
+            ->setGroups(array('Default'));
 
         return $response->write($serializer->serialize($member, 'json', $context));
     }
