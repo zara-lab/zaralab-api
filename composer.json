@@ -31,7 +31,7 @@
     }
   },
   "require": {
-    "php": ">=5.4",
+    "php": ">=5.5",
     "ext-pdo_mysql": "*",
     "slim/slim": "^3.0@beta",
     "slim/twig-view": "^1.1",
